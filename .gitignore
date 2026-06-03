@@ -1,0 +1,15 @@
+# Environments
+venv/
+env/
+.env
+
+# Data & Models
+data/
+models/
+*.pt
+*.pth
+
+# Python Cache
+__pycache__/
+*.pyc
+.ipynb_checkpoints/

@@ -1,0 +1,10 @@
+pandas
+numpy
+Pillow
+matplotlib
+scikit-learn
+torch
+torchvision
+faiss-cpu
+torch_geometric
+open_clip_torch
