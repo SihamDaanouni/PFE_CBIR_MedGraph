@@ -1,45 +1,50 @@
 """
-Main execution pipeline for the Baseline CBIR system.
-Orchestrates data loading, ResNet50 feature extraction, and performance evaluation.
+Main execution pipeline for Ablation Level 1: BioCLIP only.
+Orchestrates multimodal data loading, BioCLIP feature extraction, and performance evaluation.
 """
 
 import argparse
 import sys
 
-from src.data.dataset_loader import get_baseline_loader
-from src.features.resnet_extractor import ResNetBaselineExtractor
+from src.data.dataset_loader import get_bioclip_loader
+from src.features.bioclip_extractor import BioCLIPExtractor
 from src.evaluation.baseline_evaluator import RetrievalEvaluator
 
 
-def run_baseline_pipeline(csv_filename: str, img_dirname: str) -> None:
+def run_bioclip_pipeline(csv_filename: str, img_dirname: str) -> None:
     """
-    Executes the full baseline pipeline: Extraction -> Saving -> Evaluation.
+    Executes the Level 1 ablation pipeline: Multimodal Extraction -> Saving -> Evaluation.
     """
     print("==================================================")
-    print("       CBIR BASELINE PIPELINE (ResNet50)          ")
+    print("       ABLATION LEVEL 1: BioCLIP ONLY             ")
     print("==================================================\n")
 
     try:
-        # 1. Initialize Data Loader
-        print("[1/3] Initializing DataLoader...")
-        loader = get_baseline_loader(csv_name=csv_filename, img_dir=img_dirname)
+        # 1. Initialize Extractor and extract internal preprocessing transforms
+        print("[1/3] Initializing BioCLIP Extractor and DataLoader...")
+        extractor = BioCLIPExtractor()
+        bioclip_transform = extractor.get_transform()
         
-        # 2. Feature Extraction
-        print("\n[2/3] Starting Feature Extraction...")
-        extractor = ResNetBaselineExtractor()
+        loader = get_bioclip_loader(
+            csv_name=csv_filename, 
+            img_dir=img_dirname, 
+            bioclip_transform=bioclip_transform
+        )
+        
+        # 2. Multimodal Feature Extraction
+        print("\n[2/3] Starting Multimodal Feature Extraction...")
         embeddings, labels = extractor.extract_from_loader(loader)
         
-        # Save embeddings using a recognizable prefix
-        prefix = "isic_baseline"
+        prefix = "isic_bioclip"
         extractor.save_embeddings(embeddings, labels, filename_prefix=prefix)
         
-        # 3. Evaluation using standardized SemVisIR K values
+        # 3. Evaluation using identical SemVisIR K values
         print("\n[3/3] Evaluating Retrieval Performance...")
         k_standard_values = [5, 10, 15, 20, 30, 100]
         evaluator = RetrievalEvaluator(k_values=k_standard_values)
         evaluator.evaluate(prefix=prefix)
 
-        print("\nBaseline pipeline execution completed successfully.")
+        print("\nLevel 1 execution completed successfully.")
 
     except FileNotFoundError as e:
         print(f"\nError: {e}")
@@ -51,7 +56,7 @@ def run_baseline_pipeline(csv_filename: str, img_dirname: str) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run the CBIR Baseline Pipeline.")
+    parser = argparse.ArgumentParser(description="Run the BioCLIP Ablation Pipeline.")
     parser.add_argument(
         "--csv", 
         type=str, 
@@ -66,4 +71,4 @@ if __name__ == "__main__":
     )
     
     args = parser.parse_args()
-    run_baseline_pipeline(csv_filename=args.csv, img_dirname=args.img_dir)
+    run_bioclip_pipeline(csv_filename=args.csv, img_dirname=args.img_dir)
