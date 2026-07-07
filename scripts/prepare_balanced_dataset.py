@@ -99,7 +99,7 @@ def create_balanced_multimodal_subset(
         dst_file = output_img_dir / dst_filename
         
         if src_file.exists():
-            shutil.copy2(src_file, dst_file)
+            shutil.copyfile(src_file, dst_file)
             # Update dataframe with the new unique identifier
             final_balanced_df.at[idx, 'image'] = f"{row['image']}_{copied_count}"
             copied_count += 1

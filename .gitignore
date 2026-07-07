@@ -13,3 +13,17 @@ models/
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+
+# Environnements virtuels
+venv/
+.venv/
+.venv_pfe/
+
+# Données lourdes et embeddings
+data/raw/
+data/processed/
+
+# Fichiers caches Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
